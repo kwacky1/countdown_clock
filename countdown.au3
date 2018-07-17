@@ -1,28 +1,41 @@
-#Region converted Directives from \\corp\file\Software\Utilities\AutoIT\Testlab Created Scripts\Simon\Complete\Countdown\countdown3.au3.ini
-#AutoIt3Wrapper_aut2exe=C:\Program Files\AutoIt3\beta\Aut2Exe\Aut2Exe.exe
-#AutoIt3Wrapper_Icon=D:\Scripts\Icons\clock2.ico
-#AutoIt3Wrapper_outfile=D:\Scripts\Complete\Countdown\countdown3.exe
+#Region ;**** Directives created by AutoIt3Wrapper_GUI ****
+#AutoIt3Wrapper_Icon=\\corp\file\Software\Utilities\AutoIT\Testlab Created Scripts\Simon\Icons\clock2.ico
+#AutoIt3Wrapper_Outfile=\\corp\file\Software\Utilities\AutoIT\Testlab Created Scripts\Simon\Complete\Countdown\countdown4.exe
 #AutoIt3Wrapper_Res_Comment=http://www.hiddensoft.com/autoit3/compiled.html
-#AutoIt3Wrapper_Res_Description=The Dennis Smith Countdown Clock
-#AutoIt3Wrapper_Res_Fileversion=3.0.0.1
+#AutoIt3Wrapper_Res_Description=The Dennis Smith Memorial Countdown Clock
+#AutoIt3Wrapper_Res_Fileversion=4.0.0.9
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=y
-#AutoIt3Wrapper_Res_LegalCopyright=SOE Integration Centre 2005-2007
-#AutoIt3Wrapper_Run_AU3Check=4
+#AutoIt3Wrapper_Res_LegalCopyright=SOE Integration Centre 2005-2017
+#AutoIt3Wrapper_Run_AU3Check=n
+#EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
+#Region converted Directives from \\corp\file\Software\Utilities\AutoIT\Testlab Created Scripts\Simon\Complete\Countdown\countdown3.au3.ini
 #EndRegion converted Directives from \\corp\file\Software\Utilities\AutoIT\Testlab Created Scripts\Simon\Complete\Countdown\countdown3.au3.ini
 ;
 #include <Date.au3>
 #include <GUIConstants.au3>
-Opt ("GUICoordMode", 2)
+#include <ColorConstants.au3>
+#include <GDIPlus.au3>
+#include <Array.au3>
 
-Dim $g_szVersion = "v3.0.0.1"
+;Opt ("GUICoordMode", 2)
+
+Dim $g_szVersion = "v4.0.0.0"
 
 Dim $Months, $Days, $Hours, $Minutes, $Seconds, $sNewDate
 Dim $lm = -1, $ld = -1, $lh = -1, $ln = -1, $ls = -1, $ml = -1, $dl = -1, $x1 = -1, $x2 = -1, $ontop
 Dim $wh[2], $ws[2], $pos[4], $pillick = 0
 Dim $totalpos = 6, $maxdates = 9, $updatenow = 0, $cdateitem, $begin, $maximized = 0, $showpillick
-Dim $ontopitem, $changedate, $title, $number, $a, $b, $ml, $c, $d, $dl, $e, $f, $x1, $g, $h, $x2, $i, $j, $x3, $cdWin, $dateitem[10], $datemenu
-$zerohour = @YEAR & "/12/31 23:59:59"
-;$zerohour = "2005/08/05 12:00:00"
+Dim $ontopitem, $changedate, $title, $number, $a, $b, $ml, $c, $d, $dl, $e, $f, $x1, $g, $h, $x2, $i, $j, $x3, $cdWin, $dateitem[10], $datemenu, $lastImageupdate, $cdImage, $k
+Dim $qrRed = 0x00C4262E
+; Initialize GDI+ library
+_GDIPlus_Startup()
+;~ $sCLSID = _GDIPlus_EncodersGetCLSID("JPG")
+;~ $zerohour = @YEAR & "/12/31 23:59:59"
+$zerohour = "2018/04/04 00:00:00"
+$imageInterval = 20
+;~ $imageInterval = 5
+;~ $imagePath = "\\corp\corp\Strategic Projects\2018 Commonwealth Games\07_Kiosk\PICTURES\"
+$imagePath = "r:\Workspace\Scratch\Images\"
 
 Func HowLong()
 	if $zerohour < _NowCalc() Then
@@ -32,7 +45,7 @@ Func HowLong()
 		$Minutes = 0
 		$Seconds = 0
 		TrayTip( "Error", "The Date/Time chosen is in the Past.", 5 )
-		if $pillick = 0 Then 
+		if $pillick = 0 Then
 			$pillick = 1
 		EndIf
 	Else
@@ -68,8 +81,13 @@ EndFunc
 Func UpdateCountdown()
 	$totalpos = 6
 	HowLong()
-	$title = "Countdown to " & $sNewDate
-	$cdWin = GUICreate( $title, 200, ($totalpos + 2) * 20, (@DesktopWidth - 200) / 2, (@DesktopHeight - ($totalpos + 2) * 20) / 2, $WS_MINIMIZEBOX+$WS_MAXIMIZEBOX+$WS_SIZEBOX+$WS_EX_TOPMOST )
+	$title = "Countdown to the Gold Coast 2018 Commonwealth Games"
+;~ 	$cdWin = GUICreate( $title, 200, ($totalpos + 2) * 20, (@DesktopWidth - 200) / 2, (@DesktopHeight - ($totalpos + 2) * 20) / 2, $WS_MINIMIZEBOX+$WS_MAXIMIZEBOX+$WS_SIZEBOX+$WS_EX_TOPMOST )
+	$cdWin = GUICreate( $title, $pos[2], $pos[3], $pos[0], $pos[1], $WS_MINIMIZEBOX+$WS_MAXIMIZEBOX+$WS_SIZEBOX+$WS_EX_TOPMOST )
+;~ 	$cdWin = GUICreate( $title, 1680, 1050, 0, 0, $WS_MINIMIZEBOX+$WS_MAXIMIZEBOX+$WS_SIZEBOX+$WS_EX_TOPMOST )
+	GUISetBkColor( 0x00FFFFFF )
+;~ 	ConsoleWrite( "w: " & 200 & ", h: " & ($totalpos + 2) * 20 & ", l: " & (@DesktopWidth - 200) / 2 & ", h: " & (@DesktopHeight - ($totalpos + 2) * 20) / 2 & @CRLF )
+;~ 	ConsoleWrite( "w: " & $pos[2] & ", h: " & $pos[3] & ", l: " & (@DesktopWidth - $pos[2]) / 2 & ", h: " & (@DesktopHeight - $pos[3]) / 2 & @CRLF )
 	CreateDateMenu()
 	$viewmenu = GUICtrlCreateMenu ( "View" )
 	$ontopitem = GUICtrlCreateMenuitem ( "Always On Top", $viewmenu )
@@ -79,39 +97,109 @@ Func UpdateCountdown()
 ;~ 	$showpillick = GUICtrlCreatePic("\\bnedevweb01\WWWDEVL\isd\images\people\andrew_kane.jpg",0,0, $pos[2], $pos[3])
 	Else
 
-
 	$number = 0
 
-	$x = 12
-	$y = 19
-
-	GUISetCoord( $x,  $y, 14, 21 )
-	$a	= GUICtrlCreateLabel( $number, -1, -1)
-	$b	= GUICtrlCreateLabel( $number,		0, -1	)
-	$ml	= GUICtrlCreateLabel( "Months",		0, -1, 100	)
-	GUISetCoord( $x,  $y*2, 14, 21 )
-	$c	= GUICtrlCreateLabel( $number,		-1, 	-1 )
-	$d	= GUICtrlCreateLabel( $number,		0, -1	)
-	$dl	= GUICtrlCreateLabel( "Days",		0, -1, 100	)
-	GUISetCoord( $x,  $y*3, 14, 21 )
-	$e	= GUICtrlCreateLabel( $number,		-1, 	-1 					)
-	$f	= GUICtrlCreateLabel( $number,		0, -1	)
-	$x1	= GUICtrlCreateLabel( "Hours",		0, -1, 100	)
-	GUISetCoord( $x,  $y*4, 14, 21 )
-	$g	= GUICtrlCreateLabel( $number, 		-1, 	-1 					)
-	$h	= GUICtrlCreateLabel( $number, 		0, -1	)
-	$x2	= GUICtrlCreateLabel( "Minutes",	0, -1, 100	)
-	GUISetCoord( $x,  $y*5, 14, 21 )
-	$i	= GUICtrlCreateLabel( $number, 		-1, 	-1 					)
-	$j	= GUICtrlCreateLabel( $number, 		0, -1	)
-	$x3	= GUICtrlCreateLabel( "Seconds",	0, -1, 100	)
-
-	EndIf
 	GUISetState( @SW_SHOW )
 	WinMove( $title, "", $pos[0], $pos[1], $pos[2], $pos[3] )
-	if $maximized = 1 then WinSetState( $title, "", @SW_MAXIMIZE )
+	if $maximized = 1 then GUISetState( @SW_MAXIMIZE );WinSetState( $title, "", @SW_MAXIMIZE )
 	$wh = WinGetClientSize( $title )
+	ConsoleWrite( "ww: " & $wh[0] & ", wh: " & $wh[1] & @CRLF )
+
+
+	$cellHeight = $wh[1] * 0.3
+	$cellLeft = 0
+	$cellWidth = $wh[0]/5
+	$cellTop = $wh[1]-$cellHeight
+	$row1 = $cellHeight / 2
+	$row2 = ($cellHeight - $row1) / 2
+	$row3 = $cellHeight - ($row1 + $row2)
+	ConsoleWrite( "H: " & $cellHeight & ", 1: " & $row1 & ", 2: " & $row2 & ", 3: " & $row3 & @CRLF )
+
+	$cdImage = GUICtrlCreatePic( "", 0, 0, $wh[0], $cellTop )
+	$k = GUICtrlCreateLabel( "Countdown to the Gold Coast 2018 Commonwealth Games", $cellLeft, $cellTop+($row1+$row2), $wh[0], $row3, $SS_CENTER )
+	GUICtrlSetBkColor( -1, $qrRed )
+	GUICtrlSetColor( -1, 0x00FFFFFF )
+	$a	= GUICtrlCreateLabel( $Months, $cellLeft, $cellTop, $cellWidth, $row1, $SS_CENTER )
+	GUICtrlSetColor( -1, $qrRed )
+	$b	= GUICtrlCreateLabel( "Months", $cellLeft, $cellTop+$row1, $cellWidth, $row2, $SS_CENTER )
+	$cellLeft += $cellWidth
+	$c	= GUICtrlCreateLabel( $Days, $cellLeft, $cellTop, $cellWidth, $row1, $SS_CENTER )
+	GUICtrlSetColor( -1, $qrRed )
+	$d	= GUICtrlCreateLabel( "Days", $cellLeft, $cellTop+$row1, $cellWidth, $row2, $SS_CENTER )
+	$cellLeft += $cellWidth
+	$e	= GUICtrlCreateLabel( $Hours, $cellLeft, $cellTop, $cellWidth, $row1, $SS_CENTER )
+	GUICtrlSetColor( -1, $qrRed )
+	$f	= GUICtrlCreateLabel( "Hours", $cellLeft, $cellTop+$row1, $cellWidth, $row2, $SS_CENTER )
+	$cellLeft += $cellWidth
+	$g	= GUICtrlCreateLabel( $Minutes, $cellLeft, $cellTop, $cellWidth, $row1, $SS_CENTER )
+	GUICtrlSetColor( -1, $qrRed )
+	$h	= GUICtrlCreateLabel( "Minutes", $cellLeft, $cellTop+$row1, $cellWidth, $row2, $SS_CENTER )
+	$cellLeft += $cellWidth
+	$i	= GUICtrlCreateLabel( $Seconds, $cellLeft, $cellTop, $cellWidth, $row1, $SS_CENTER )
+	GUICtrlSetColor( -1, $qrRed )
+	$j	= GUICtrlCreateLabel( "Seconds", $cellLeft, $cellTop+$row1, $cellWidth, $row2, $SS_CENTER )
+
+	EndIf
+	DisplayImage( $wh[0], $cellTop )
+
 EndFunc
+
+Func DisplayImage( $maxWidth, $maxHeight )
+	Local $iX, $iY, $images, $selected, $hImage, $xScale = 1, $yScale = 1
+	ConsoleWrite( "DisplayImage: Loop" & @CRLF  )
+	$images = GetImages()
+	$selected = Random( 1, UBound( $images ), 1 ) - 1
+    $hImage = _GDIPlus_ImageLoadFromFile( $imagePath & $images[$selected] )
+	ConsoleWrite( $imagePath & $images[$selected] & @CRLF )
+	$iX = _GDIPlus_ImageGetWidth($hImage)
+	$iY = _GDIPlus_ImageGetHeight($hImage)
+
+	ConsoleWrite( "max x: " & $maxWidth & ", x: " & $iX & @CRLF )
+
+	If $iX > $maxWidth Then
+		Local $xScale = $maxWidth / $iX
+		$iX *= $xScale
+		$iY *= $xScale
+	EndIf
+
+	ConsoleWrite( "max y: " & $maxHeight & ", y: " & $iY & @CRLF )
+	If $iY > $maxHeight Then
+		Local $yScale = $maxHeight / $iY
+		$iX *= $yScale
+		$iY *= $yScale
+	EndIf
+
+	ConsoleWrite( "x: " & $iX & ", y: " & $iY & @CRLF )
+
+	Local $hBitmap_Scaled = _GDIPlus_ImageScale( $hImage, $xScale, $yScale )
+	_GDIPlus_ImageSaveToFile( $hBitmap_Scaled, @TempDir & "\countdown.jpg" )
+	ConsoleWriteError( @TempDir & "\countdown.jpg( " & @error & " )" & @CRLF )
+;~ 	GUICtrlDelete( $cdImage )
+;~ 	$cdImage = GUICtrlCreatePic( @TempDir & "\countdown.jpg", ($maxWidth-$iX)/2, 0, $iX, $iY )
+	GUICtrlSetImage( $cdImage, @TempDir & "\countdown.jpg" )
+	GUICtrlSetPos( $cdImage, ($maxWidth-$iX)/2, 0, $iX, $iY )
+	_GDIPlus_ImageDispose( $hImage )
+	_GDIPlus_BitmapDispose( $hBitmap_Scaled )
+
+	$lastImageupdate = TimerInit()
+EndFunc
+
+Func GetImages()
+	Local $hSearch = FileFindFirstFile($imagePath & "*.*")
+	Local $files[0]
+	If $hSearch = -1 Then
+		ConsoleWriteError( "No Files Found in " & $imagePath & " (" & @error & ")" & @CRLF )
+		Return False
+	EndIf
+	Local $sFileName = ""
+	While 1
+		$sFileName = FileFindNextFile($hSearch)
+		If @error Then ExitLoop
+		if $sFileName <> "Thumbs.db" Then _ArrayAdd( $files, $sFileName )
+	WEnd
+	FileClose($hSearch)
+	Return $files
+EndFunc   ;==>Example
 
 Func OnTop()
 	If $ontop = 1 Then
@@ -129,123 +217,72 @@ Func DisplayNumber( $number, $position )
 	$wh = WinGetClientSize( $title )
 	Select
 	Case $position = "a"
-		GUICtrlSetData( $a, $number)
-	Case $position = "b"
-		GUICtrlSetData( $b, $number)
+		GUICtrlSetData( $a, $number )
 	Case $position = "c"
-		GUICtrlSetData( $c, $number)
-	Case $position = "d"
-		GUICtrlSetData( $d, $number)
+		GUICtrlSetData( $c, $number )
 	Case $position = "e"
-		GUICtrlSetData( $e, $number)
-	Case $position = "f"
-		GUICtrlSetData( $f, $number)
+		GUICtrlSetData( $e, $number )
 	Case $position = "g"
-		GUICtrlSetData( $g, $number)
-	Case $position = "h"
-		GUICtrlSetData( $h, $number)
+		GUICtrlSetData( $g, $number )
 	Case $position = "i"
-		GUICtrlSetData( $i, $number)
-	Case $position = "j"
-		GUICtrlSetData( $j, $number)
+		GUICtrlSetData( $i, $number )
 	EndSelect
+	If TimerDiff($lastImageupdate) > ($imageInterval * 1000) Then
+		$cellHeight = $wh[1] * 0.3
+		$cellTop = $wh[1]-$cellHeight
+		DisplayImage( $wh[0], $cellTop )
+		$lastImageupdate = TimerInit()
+	EndIf
 	If ($wh[0] <> $ws[0]) or ($wh[1] <> $ws[1]) or $updatenow Then
 		$updatenow = 0
-		$x = 12
-		$y = 19
-		$totalacross = 17
-		$cpos = 0
-
-		$fontmodifer = (($wh[1] + $wh[0])/2) * 0.09
+		$cellHeight = $wh[1] * 0.3
+		$cellTop = $wh[1]-$cellHeight
+		DisplayImage( $wh[0], $cellTop )
+;~ 		$fontmodifer = (($wh[1] + $wh[0])/2) * 0.09
+		$fontmodifer = $cellHeight * 0.4
 ;- Months
 		If ($Months = 0) and (GUICtrlGetState( $a ) = 80) Then
 			GUICtrlSetState( $a, $GUI_HIDE)
-			GUICtrlSetState( $b, $GUI_HIDE )
-			GUICtrlSetState( $ml, $GUI_HIDE )
-			$totalpos = 5
-			$cpos = 0
+			GUICtrlSetState( $b, $GUI_HIDE)
 		Elseif GUICtrlGetState( $a ) = 80 Then
-			$cpos = $cpos + 1
-			GUISetCoord( $x,  $wh[1]/$totalpos*$cpos, 14, 21 )
-			GUICtrlSetPos(	$a, 	-1, 		-1, 	$wh[0]/$totalacross, 		$wh[1]/$totalpos )
 			GUICtrlSetFont( $a, 	$fontmodifer )
-			GUICtrlSetPos( 	$b,		0, -1, 	$wh[0]/$totalacross,		$wh[1]/$totalpos )
-			GUICtrlSetFont( $b, 	$fontmodifer )
-			GUICtrlSetPos( 	$ml, 	$wh[0]/$totalacross, -1, 	$wh[0]/2,	$wh[1]/$totalpos )
-			GUICtrlSetFont( $ml, 	$fontmodifer )
+			GUICtrlSetFont( $b, 	$fontmodifer / 3 )
+			ConsoleWrite( "Font: " & $fontmodifer & @CRLF )
 		EndIf
 ;- Days
-		GUISetCoord( $x,  $wh[1]/$totalpos*$cpos);, 14, 21 )
 		If ($Months = 0) and ($Days = 0) and (GUICtrlGetState( $c ) = 80) Then
 			GUICtrlSetState( $c, $GUI_HIDE)
-			GUICtrlSetState( $d, $GUI_HIDE )
-			GUICtrlSetState( $dl, $GUI_HIDE )
-			;ToolTip( GuiCtrlGetState( $a ) )
-			$totalpos = 4
-			$cpos = 0
+			GUICtrlSetState( $d, $GUI_HIDE)
 		Elseif GUICtrlGetState( $c ) = 80 Then
-			$cpos = $cpos + 1
-			GUISetCoord( $x,  $wh[1]/$totalpos*$cpos, 14, 21 )
-			GUICtrlSetPos( 	$c,		-1, 		-1, 	$wh[0]/$totalacross, 		$wh[1]/$totalpos )
 			GUICtrlSetFont( $c, 	$fontmodifer )
-			GUICtrlSetPos( 	$d, 	0, -1, 	$wh[0]/$totalacross, 		$wh[1]/$totalpos )
-			GUICtrlSetFont( $d, 	$fontmodifer )
-			GUICtrlSetPos( 	$dl, 	$wh[0]/$totalacross, 	-1, $wh[0]/2, 	$wh[1]/$totalpos )
-			GUICtrlSetFont( $dl, 	$fontmodifer )
+			GUICtrlSetFont( $d, 	$fontmodifer / 3 )
 		EndIf
 ;- Hours
 		If ($Months = 0) and ($Days = 0) and ($Hours = 0) and (GUICtrlGetState( $e ) = 80) Then
 			GUICtrlSetState( $e, $GUI_HIDE)
-			GUICtrlSetState( $f, $GUI_HIDE )
-			GUICtrlSetState( $x1, $GUI_HIDE )
-			;ToolTip( GuiCtrlGetState( $a ) )
-			$totalpos = 3
-			$cpos = 0
+			GUICtrlSetState( $f, $GUI_HIDE)
 		Elseif GUICtrlGetState( $e ) = 80 Then
-			$cpos = $cpos + 1
-			GUISetCoord( $x,  $wh[1]/$totalpos*$cpos, 14, 21 )
-			GUICtrlSetPos( 	$e, 	-1, 		-1, 	$wh[0]/$totalacross, 		$wh[1]/$totalpos )
 			GUICtrlSetFont( $e, 	$fontmodifer )
-			GUICtrlSetPos( 	$f, 	0, -1, 	$wh[0]/$totalacross, 		$wh[1]/$totalpos )
-			GUICtrlSetFont( $f, 	$fontmodifer )
-			GUICtrlSetPos( 	$x1, 	$wh[0]/$totalacross, 	-1, $wh[0]/2, 	$wh[1]/$totalpos )
-			GUICtrlSetFont( $x1, 	$fontmodifer )
+			GUICtrlSetFont( $f, 	$fontmodifer / 3 )
 		EndIf
 ;- Minutes
 		If ($Months = 0) and ($Days = 0) and ($Hours = 0) and ($Minutes = 0) and (GUICtrlGetState( $g ) = 80) Then
 			GUICtrlSetState( $g, $GUI_HIDE)
-			GUICtrlSetState( $h, $GUI_HIDE )
-			GUICtrlSetState( $x2, $GUI_HIDE )
-			;ToolTip( GuiCtrlGetState( $a ) )
-			$totalpos = 2
-			$cpos = 0
+			GUICtrlSetState( $h, $GUI_HIDE)
 		Elseif GUICtrlGetState( $g ) = 80 Then
-			$cpos = $cpos + 1
-			GUISetCoord( $x,  $wh[1]/$totalpos*$cpos, 14, 21 )
-			GUICtrlSetPos( 	$g, 	-1, 		-1, 	$wh[0]/$totalacross, 		$wh[1]/$totalpos )
 			GUICtrlSetFont( $g, 	$fontmodifer )
-			GUICtrlSetPos( 	$h, 	0, -1, 	$wh[0]/$totalacross, 		$wh[1]/$totalpos )
-			GUICtrlSetFont( $h, 	$fontmodifer )
-			GUICtrlSetPos( 	$x2, 	$wh[0]/$totalacross, 	-1, $wh[0]/2, 	$wh[1]/$totalpos )
-			GUICtrlSetFont( $x2, 	$fontmodifer )
+			GUICtrlSetFont( $h, 	$fontmodifer / 3 )
 		EndIf
 ;- Seconds
 		If ($Months = 0) and ($Days = 0) and ($Hours = 0) and ($Minutes = 0) and ($Seconds = 0) and (GUICtrlGetState( $i ) = 80) Then
 			GUICtrlSetState( $i, $GUI_HIDE)
-			GUICtrlSetState( $j, $GUI_HIDE )
-			GUICtrlSetState( $x3, $GUI_HIDE )
-			$totalpos = 1
-			$cpos = 0
+			GUICtrlSetState( $j, $GUI_HIDE)
 		Elseif GUICtrlGetState( $i ) = 80 Then
-			$cpos = $cpos + 1
-			GUISetCoord( $x,  $wh[1]/$totalpos*$cpos, 14, 21 )
-			GUICtrlSetPos( 	$i, 	-1, 		-1, 	$wh[0]/$totalacross, 		$wh[1]/$totalpos )
 			GUICtrlSetFont( $i, 	$fontmodifer )
-			GUICtrlSetPos( 	$j, 	0, -1, 	$wh[0]/$totalacross, 		$wh[1]/$totalpos )
-			GUICtrlSetFont( $j, 	$fontmodifer )
-			GUICtrlSetPos( 	$x3, 	$wh[0]/$totalacross, 	-1, $wh[0]/2, 	$wh[1]/$totalpos )
-			GUICtrlSetFont( $x3, 	$fontmodifer )
+			GUICtrlSetFont( $j, 	$fontmodifer / 3 )
 		EndIf
+;~ Message
+		GUICtrlSetFont( $k, 	$fontmodifer / 3 )
 		$ws[0] = $wh[0]
 		$ws[1] = $wh[1]
 	EndIf
@@ -255,58 +292,23 @@ Func DisplayCountdown()
 	HowLong()
 	If BitAND(WinGetState( $title ), 2 ) and $pillick = 0 Then
 		If $lm <> $Months Then
-			$m2 = StringRight( $Months, 1 )
-			If $Months > 9 Then
-				$m1 = 1
-			Else
-				$m1 = 0
-			EndIf
-			DisplayNumber( $m1, "a" )
-			DisplayNumber( $m2, "b" )
+			DisplayNumber( $Months, "a" )
 			$lm = $Months
 		EndIf
 		If $ld <> $Days Then
-			$d2 = StringRight( $Days, 1 )
-			If $Days > 9 Then
-				$d1 = StringLeft( $Days, 1 )
-			Else
-				$d1 = 0
-			EndIf
-			DisplayNumber( $d1, "c" )
-			DisplayNumber( $d2, "d" )
+			DisplayNumber( $Days, "c" )
 			$ld = $Days
 		EndIf
 		If $lh <> $Hours Then
-			$h2 = StringRight( $Hours, 1 )
-			If $Hours > 9 Then
-				$h1 = StringLeft( $Hours, 1 )
-			Else
-				$h1 = 0
-			EndIf
-			DisplayNumber( $h1, "e" )
-			DisplayNumber( $h2, "f" )
+			DisplayNumber( $Hours, "e" )
 			$lh = $Hours
 		EndIf
 		If $ln <> $Minutes Then
-			$n2 = StringRight( $Minutes, 1 )
-			If $Minutes > 9 Then
-				$n1 = StringLeft( $Minutes, 1 )
-			Else
-				$n1 = 0
-			EndIf
-			DisplayNumber( $n1, "g" )
-			DisplayNumber( $n2, "h" )
+			DisplayNumber( $Minutes, "g" )
 			$ln = $Minutes
 		EndIf
 		If $ls <> $Seconds Then
-			$s2 = StringRight( $Seconds, 1 )
-			If $Seconds > 9 Then
-				$s1 = StringLeft( $Seconds, 1 )
-			Else
-				$s1 = 0
-			EndIf
-			DisplayNumber( $s1, "i" )
-			DisplayNumber( $s2, "j" )
+			DisplayNumber( $Seconds, "i" )
 			$ls = $Seconds
 		EndIf
 	EndIf
@@ -322,7 +324,7 @@ Func NewDate( )
 		For $item = 1 to $maxdates
 			$recentdates = RegRead( "HKEY_CURRENT_USER\Software\Dennis Smith\Countdown Clock", $item+1 )
 			RegWrite( "HKEY_CURRENT_USER\Software\Dennis Smith\Countdown Clock", $item, "REG_SZ", $recentdates )
-		Next		
+		Next
 		$dateitem[$maxdates] = GUICtrlCreateMenuitem ( $zerohour, $datemenu )
 	EndIf
 	$lm = -1
@@ -342,9 +344,9 @@ Func ChangeDate()
 	$olddate = StringLeft( $zerohour, 10 )
 	$oldtime = StringRight( $zerohour, 8 )
 	$newdate = GuiCtrlCreateDate($olddate, 5, 5, 100, 20, $DTS_SHORTDATEFORMAT)
-	$newtime = GUICtrlCreateDate ( $oldtime, 10, -1, 100, 20, $DTS_TIMEFORMAT) 
+	$newtime = GUICtrlCreateDate ( $oldtime, 10, -1, 100, 20, $DTS_TIMEFORMAT)
 	$btn = GUICtrlCreateButton ("Ok", -1,  0, 60, 20)
-	GUISetState () 
+	GUISetState ()
 	While 1
 		$msg = GUIGetMsg()
 		Select
@@ -374,6 +376,8 @@ Func ChangeDate()
 EndFunc
 
 Func MyExit()
+	; Shut down GDI+ library
+	_GDIPlus_Shutdown()
 	$pos = WinGetPos( $title )
 	if $maximized = 0 Then
 		RegWrite( "HKEY_CURRENT_USER\Software\Dennis Smith\Countdown Clock", "x", "REG_SZ", $pos[0] )
@@ -387,10 +391,11 @@ EndFunc
 
 $pos[0] = RegRead( "HKEY_CURRENT_USER\Software\Dennis Smith\Countdown Clock", "x" )
 if $pos[0] = "" Then
-	$pos[0] = (@DesktopWidth - 200) / 2
-	$pos[1] = (@DesktopHeight - ($totalpos + 2) * 20) / 2
-	$pos[2] = 200
-	$pos[3] = ($totalpos + 2) * 20
+	$pos[0] = 1504
+	$pos[1] = 4
+	$pos[2] = 1694
+	$pos[3] = 1064
+	$maximized = RegRead( "HKEY_CURRENT_USER\Software\Dennis Smith\Countdown Clock", "m" )
 ;~ 	$wh[0] = 200
 ;~ 	$wh[1] = ($totalpos + 2) * 20
 Else
@@ -398,7 +403,8 @@ Else
 	$pos[2] = RegRead( "HKEY_CURRENT_USER\Software\Dennis Smith\Countdown Clock", "w" )
 	$pos[3] = RegRead( "HKEY_CURRENT_USER\Software\Dennis Smith\Countdown Clock", "h" )
 	$maximized = RegRead( "HKEY_CURRENT_USER\Software\Dennis Smith\Countdown Clock", "m" )
-EndIf	
+EndIf
+ConsoleWrite( "1: " & $pos[1] & ", 2: " & $pos[2] & ", 3: " & $pos[3] & ", m: " & $maximized & @CRLF )
 UpdateCountdown()
 
 While 1
