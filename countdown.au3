@@ -1,13 +1,27 @@
+#Region converted Directives from \\corp\file\Software\Utilities\AutoIT\Testlab Created Scripts\Simon\Complete\Countdown\countdown3.au3.ini
+#AutoIt3Wrapper_aut2exe=C:\Program Files\AutoIt3\beta\Aut2Exe\Aut2Exe.exe
+#AutoIt3Wrapper_Icon=D:\Scripts\Icons\clock2.ico
+#AutoIt3Wrapper_outfile=D:\Scripts\Complete\Countdown\countdown3.exe
+#AutoIt3Wrapper_Res_Comment=http://www.hiddensoft.com/autoit3/compiled.html
+#AutoIt3Wrapper_Res_Description=The Dennis Smith Countdown Clock
+#AutoIt3Wrapper_Res_Fileversion=3.0.0.1
+#AutoIt3Wrapper_Res_Fileversion_AutoIncrement=y
+#AutoIt3Wrapper_Res_LegalCopyright=SOE Integration Centre 2005-2007
+#AutoIt3Wrapper_Run_AU3Check=4
+#EndRegion converted Directives from \\corp\file\Software\Utilities\AutoIT\Testlab Created Scripts\Simon\Complete\Countdown\countdown3.au3.ini
+;
 #include <Date.au3>
 #include <GUIConstants.au3>
 Opt ("GUICoordMode", 2)
+
+Dim $g_szVersion = "v3.0.0.1"
 
 Dim $Months, $Days, $Hours, $Minutes, $Seconds, $sNewDate
 Dim $lm = -1, $ld = -1, $lh = -1, $ln = -1, $ls = -1, $ml = -1, $dl = -1, $x1 = -1, $x2 = -1, $ontop
 Dim $wh[2], $ws[2], $pos[4], $pillick = 0
 Dim $totalpos = 6, $maxdates = 9, $updatenow = 0, $cdateitem, $begin, $maximized = 0, $showpillick
 Dim $ontopitem, $changedate, $title, $number, $a, $b, $ml, $c, $d, $dl, $e, $f, $x1, $g, $h, $x2, $i, $j, $x3, $cdWin, $dateitem[10], $datemenu
-$zerohour = "2006/12/31 23:59:59"
+$zerohour = @YEAR & "/12/31 23:59:59"
 ;$zerohour = "2005/08/05 12:00:00"
 
 Func HowLong()
@@ -17,7 +31,7 @@ Func HowLong()
 		$Days = 0
 		$Minutes = 0
 		$Seconds = 0
-		TrayTip( "Pillick", "The Event Chosen has Passed", 5 )
+		TrayTip( "Error", "The Date/Time chosen is in the Past.", 5 )
 		if $pillick = 0 Then 
 			$pillick = 1
 		EndIf
@@ -372,11 +386,13 @@ Func MyExit()
 EndFunc
 
 $pos[0] = RegRead( "HKEY_CURRENT_USER\Software\Dennis Smith\Countdown Clock", "x" )
-if @error Then
+if $pos[0] = "" Then
 	$pos[0] = (@DesktopWidth - 200) / 2
 	$pos[1] = (@DesktopHeight - ($totalpos + 2) * 20) / 2
-	$wh[0] = 200
-	$wh[1] = ($totalpos + 2) * 20
+	$pos[2] = 200
+	$pos[3] = ($totalpos + 2) * 20
+;~ 	$wh[0] = 200
+;~ 	$wh[1] = ($totalpos + 2) * 20
 Else
 	$pos[1] = RegRead( "HKEY_CURRENT_USER\Software\Dennis Smith\Countdown Clock", "y" )
 	$pos[2] = RegRead( "HKEY_CURRENT_USER\Software\Dennis Smith\Countdown Clock", "w" )
