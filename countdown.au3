@@ -3,7 +3,7 @@
 #AutoIt3Wrapper_Outfile=\\corp\file\Software\Utilities\AutoIT\Testlab Created Scripts\Simon\Complete\Countdown\countdown4.exe
 #AutoIt3Wrapper_Res_Comment=http://www.hiddensoft.com/autoit3/compiled.html
 #AutoIt3Wrapper_Res_Description=The Dennis Smith Memorial Countdown Clock
-#AutoIt3Wrapper_Res_Fileversion=4.0.0.9
+#AutoIt3Wrapper_Res_Fileversion=4.1.0.1
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=y
 #AutoIt3Wrapper_Res_LegalCopyright=SOE Integration Centre 2005-2017
 #AutoIt3Wrapper_Run_AU3Check=n
@@ -19,9 +19,9 @@
 
 ;Opt ("GUICoordMode", 2)
 
-Dim $g_szVersion = "v4.0.0.0"
+Dim $g_szVersion = "v4.1.0.0"
 
-Dim $Months, $Days, $Hours, $Minutes, $Seconds, $sNewDate
+Dim $Months = 0, $Days, $Hours, $Minutes, $Seconds, $sNewDate
 Dim $lm = -1, $ld = -1, $lh = -1, $ln = -1, $ls = -1, $ml = -1, $dl = -1, $x1 = -1, $x2 = -1, $ontop
 Dim $wh[2], $ws[2], $pos[4], $pillick = 0
 Dim $totalpos = 6, $maxdates = 9, $updatenow = 0, $cdateitem, $begin, $maximized = 0, $showpillick
@@ -31,15 +31,15 @@ Dim $qrRed = 0x00C4262E
 _GDIPlus_Startup()
 ;~ $sCLSID = _GDIPlus_EncodersGetCLSID("JPG")
 ;~ $zerohour = @YEAR & "/12/31 23:59:59"
-$zerohour = "2018/04/04 00:00:00"
+$zerohour = "2018/04/04 20:00:00"
 $imageInterval = 20
 ;~ $imageInterval = 5
-;~ $imagePath = "\\corp\corp\Strategic Projects\2018 Commonwealth Games\07_Kiosk\PICTURES\"
-$imagePath = "r:\Workspace\Scratch\Images\"
+$imagePath = "\\corp\corp\Strategic Projects\2018 Commonwealth Games\07_Kiosk\PICTURES\"
+;~ $imagePath = "r:\Workspace\Scratch\Images\"
 
 Func HowLong()
 	if $zerohour < _NowCalc() Then
-		$Months = 0
+;~ 		$Months = 0
 		$Hours = 0
 		$Days = 0
 		$Minutes = 0
@@ -49,11 +49,11 @@ Func HowLong()
 			$pillick = 1
 		EndIf
 	Else
-		$Months =  _DateDiff( 'M',_NowCalc(), $zerohour )
-		$sNewDate = _DateAdd( 'm', $Months, _NowCalc())
+;~ 		$Months =  _DateDiff( 'M',_NowCalc(), $zerohour )
+;~ 		$sNewDate = _DateAdd( 'm', $Months, _NowCalc())
 
-		$Days =    _DateDiff( 'D', $sNewDate, $zerohour )
-		$sNewDate = _DateAdd( 'D', $Days, $sNewDate)
+		$Days =    _DateDiff( 'D', _NowCalc(), $zerohour )
+		$sNewDate = _DateAdd( 'D', $Days, _NowCalc())
 
 		$Hours =   _DateDiff( 'h', $sNewDate, $zerohour )
 		$sNewDate = _DateAdd( 'h', $Hours, $sNewDate)
@@ -79,7 +79,8 @@ Func CreateDateMenu()
 EndFunc
 
 Func UpdateCountdown()
-	$totalpos = 6
+;~ 	$totalpos = 6
+	$columns = 4
 	HowLong()
 	$title = "Countdown to the Gold Coast 2018 Commonwealth Games"
 ;~ 	$cdWin = GUICreate( $title, 200, ($totalpos + 2) * 20, (@DesktopWidth - 200) / 2, (@DesktopHeight - ($totalpos + 2) * 20) / 2, $WS_MINIMIZEBOX+$WS_MAXIMIZEBOX+$WS_SIZEBOX+$WS_EX_TOPMOST )
@@ -108,7 +109,7 @@ Func UpdateCountdown()
 
 	$cellHeight = $wh[1] * 0.3
 	$cellLeft = 0
-	$cellWidth = $wh[0]/5
+	$cellWidth = $wh[0]/$columns
 	$cellTop = $wh[1]-$cellHeight
 	$row1 = $cellHeight / 2
 	$row2 = ($cellHeight - $row1) / 2
@@ -119,10 +120,10 @@ Func UpdateCountdown()
 	$k = GUICtrlCreateLabel( "Countdown to the Gold Coast 2018 Commonwealth Games", $cellLeft, $cellTop+($row1+$row2), $wh[0], $row3, $SS_CENTER )
 	GUICtrlSetBkColor( -1, $qrRed )
 	GUICtrlSetColor( -1, 0x00FFFFFF )
-	$a	= GUICtrlCreateLabel( $Months, $cellLeft, $cellTop, $cellWidth, $row1, $SS_CENTER )
-	GUICtrlSetColor( -1, $qrRed )
-	$b	= GUICtrlCreateLabel( "Months", $cellLeft, $cellTop+$row1, $cellWidth, $row2, $SS_CENTER )
-	$cellLeft += $cellWidth
+;~ 	$a	= GUICtrlCreateLabel( $Months, $cellLeft, $cellTop, $cellWidth, $row1, $SS_CENTER )
+;~ 	GUICtrlSetColor( -1, $qrRed )
+;~ 	$b	= GUICtrlCreateLabel( "Months", $cellLeft, $cellTop+$row1, $cellWidth, $row2, $SS_CENTER )
+;~ 	$cellLeft += $cellWidth
 	$c	= GUICtrlCreateLabel( $Days, $cellLeft, $cellTop, $cellWidth, $row1, $SS_CENTER )
 	GUICtrlSetColor( -1, $qrRed )
 	$d	= GUICtrlCreateLabel( "Days", $cellLeft, $cellTop+$row1, $cellWidth, $row2, $SS_CENTER )
@@ -241,14 +242,14 @@ Func DisplayNumber( $number, $position )
 ;~ 		$fontmodifer = (($wh[1] + $wh[0])/2) * 0.09
 		$fontmodifer = $cellHeight * 0.4
 ;- Months
-		If ($Months = 0) and (GUICtrlGetState( $a ) = 80) Then
-			GUICtrlSetState( $a, $GUI_HIDE)
-			GUICtrlSetState( $b, $GUI_HIDE)
-		Elseif GUICtrlGetState( $a ) = 80 Then
-			GUICtrlSetFont( $a, 	$fontmodifer )
-			GUICtrlSetFont( $b, 	$fontmodifer / 3 )
-			ConsoleWrite( "Font: " & $fontmodifer & @CRLF )
-		EndIf
+;~ 		If ($Months = 0) and (GUICtrlGetState( $a ) = 80) Then
+;~ 			GUICtrlSetState( $a, $GUI_HIDE)
+;~ 			GUICtrlSetState( $b, $GUI_HIDE)
+;~ 		Elseif GUICtrlGetState( $a ) = 80 Then
+;~ 			GUICtrlSetFont( $a, 	$fontmodifer )
+;~ 			GUICtrlSetFont( $b, 	$fontmodifer / 3 )
+;~ 			ConsoleWrite( "Font: " & $fontmodifer & @CRLF )
+;~ 		EndIf
 ;- Days
 		If ($Months = 0) and ($Days = 0) and (GUICtrlGetState( $c ) = 80) Then
 			GUICtrlSetState( $c, $GUI_HIDE)
@@ -291,10 +292,10 @@ EndFunc
 Func DisplayCountdown()
 	HowLong()
 	If BitAND(WinGetState( $title ), 2 ) and $pillick = 0 Then
-		If $lm <> $Months Then
-			DisplayNumber( $Months, "a" )
-			$lm = $Months
-		EndIf
+;~ 		If $lm <> $Months Then
+;~ 			DisplayNumber( $Months, "a" )
+;~ 			$lm = $Months
+;~ 		EndIf
 		If $ld <> $Days Then
 			DisplayNumber( $Days, "c" )
 			$ld = $Days
