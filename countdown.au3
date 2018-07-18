@@ -1,11 +1,11 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Icon=\\corp\file\Software\Utilities\AutoIT\Testlab Created Scripts\Simon\Icons\clock2.ico
-#AutoIt3Wrapper_Outfile=\\corp\file\Software\Utilities\AutoIT\Testlab Created Scripts\Simon\Complete\Countdown\countdown4.exe
+#AutoIt3Wrapper_Outfile=bin\countdown.scr
 #AutoIt3Wrapper_Res_Comment=http://www.hiddensoft.com/autoit3/compiled.html
 #AutoIt3Wrapper_Res_Description=The Dennis Smith Memorial Countdown Clock
-#AutoIt3Wrapper_Res_Fileversion=4.1.0.1
+#AutoIt3Wrapper_Res_Fileversion=4.2.0.1
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=y
-#AutoIt3Wrapper_Res_LegalCopyright=SOE Integration Centre 2005-2017
+#AutoIt3Wrapper_Res_LegalCopyright=SOE Integration Centre 2005-2018
 #AutoIt3Wrapper_Run_AU3Check=n
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 #Region converted Directives from \\corp\file\Software\Utilities\AutoIT\Testlab Created Scripts\Simon\Complete\Countdown\countdown3.au3.ini
@@ -16,10 +16,11 @@
 #include <ColorConstants.au3>
 #include <GDIPlus.au3>
 #include <Array.au3>
+#include <..\Includes\_SS_UDF.au3>
 
 ;Opt ("GUICoordMode", 2)
 
-Dim $g_szVersion = "v4.1.0.0"
+Dim $g_szVersion = "v4.2.0.0"
 
 Dim $Months = 0, $Days, $Hours, $Minutes, $Seconds, $sNewDate
 Dim $lm = -1, $ld = -1, $lh = -1, $ln = -1, $ls = -1, $ml = -1, $dl = -1, $x1 = -1, $x2 = -1, $ontop
@@ -27,17 +28,19 @@ Dim $wh[2], $ws[2], $pos[4], $pillick = 0
 Dim $totalpos = 6, $maxdates = 9, $updatenow = 0, $cdateitem, $begin, $maximized = 0, $showpillick
 Dim $ontopitem, $changedate, $title, $number, $a, $b, $ml, $c, $d, $dl, $e, $f, $x1, $g, $h, $x2, $i, $j, $x3, $cdWin, $dateitem[10], $datemenu, $lastImageupdate, $cdImage, $k
 Dim $qrRed = 0x00C4262E
+Dim $settings = @ScriptDir & "\countdown.ini"
 ; Initialize GDI+ library
 _GDIPlus_Startup()
 ;~ $sCLSID = _GDIPlus_EncodersGetCLSID("JPG")
-;~ $zerohour = @YEAR & "/12/31 23:59:59"
-$zerohour = "2018/04/04 20:00:00"
+$zeroHour = IniRead( $settings, "Options", "Deadline", @YEAR & "/12/31 23:59:59" )
+ConsoleWrite( "$zeroHour: " & $zeroHour & @CRLF )
 $imageInterval = 20
 ;~ $imageInterval = 5
-$imagePath = "\\corp\corp\Strategic Projects\2018 Commonwealth Games\07_Kiosk\PICTURES\"
-;~ $imagePath = "r:\Workspace\Scratch\Images\"
+;~ $imagePath = "\\corp\corp\Strategic Projects\2018 Commonwealth Games\07_Kiosk\PICTURES\"
+$imagePath = IniRead( $settings, "Options", "Images", "r:\Workspace\Scratch\Images\")
 
 Func HowLong()
+;~ 	ConsoleWrite( "$zeroHour: " & $zeroHour & @CRLF )
 	if $zerohour < _NowCalc() Then
 ;~ 		$Months = 0
 		$Hours = 0
@@ -46,6 +49,7 @@ Func HowLong()
 		$Seconds = 0
 		TrayTip( "Error", "The Date/Time chosen is in the Past.", 5 )
 		if $pillick = 0 Then
+			ConsoleWrite( "Setting $pillick to 1 because $zeroHour (" & $zeroHour & ") is less then _NowCalc() (" & _NowCalc() & ")" & @CRLF )
 			$pillick = 1
 		EndIf
 	Else
@@ -82,16 +86,18 @@ Func UpdateCountdown()
 ;~ 	$totalpos = 6
 	$columns = 4
 	HowLong()
-	$title = "Countdown to the Gold Coast 2018 Commonwealth Games"
-;~ 	$cdWin = GUICreate( $title, 200, ($totalpos + 2) * 20, (@DesktopWidth - 200) / 2, (@DesktopHeight - ($totalpos + 2) * 20) / 2, $WS_MINIMIZEBOX+$WS_MAXIMIZEBOX+$WS_SIZEBOX+$WS_EX_TOPMOST )
-	$cdWin = GUICreate( $title, $pos[2], $pos[3], $pos[0], $pos[1], $WS_MINIMIZEBOX+$WS_MAXIMIZEBOX+$WS_SIZEBOX+$WS_EX_TOPMOST )
-;~ 	$cdWin = GUICreate( $title, 1680, 1050, 0, 0, $WS_MINIMIZEBOX+$WS_MAXIMIZEBOX+$WS_SIZEBOX+$WS_EX_TOPMOST )
+	$title = IniRead( $settings, "Options", "Title", "Countdown to the New Year" )
+	ConsoleWrite( "$title: " & $title & @CRLF )
+;~ 	$cdWin = GUICreate( $title, $pos[2], $pos[3], $pos[0], $pos[1], $WS_MINIMIZEBOX+$WS_MAXIMIZEBOX+$WS_SIZEBOX+$WS_EX_TOPMOST )
+	$cdWin = _SS_GUICreate()
 	GUISetBkColor( 0x00FFFFFF )
 ;~ 	ConsoleWrite( "w: " & 200 & ", h: " & ($totalpos + 2) * 20 & ", l: " & (@DesktopWidth - 200) / 2 & ", h: " & (@DesktopHeight - ($totalpos + 2) * 20) / 2 & @CRLF )
 ;~ 	ConsoleWrite( "w: " & $pos[2] & ", h: " & $pos[3] & ", l: " & (@DesktopWidth - $pos[2]) / 2 & ", h: " & (@DesktopHeight - $pos[3]) / 2 & @CRLF )
+#cs - Disable menu for Screen Saver
 	CreateDateMenu()
 	$viewmenu = GUICtrlCreateMenu ( "View" )
 	$ontopitem = GUICtrlCreateMenuitem ( "Always On Top", $viewmenu )
+#ce
 
 	if $pillick = 1 Then
 	GUISetCoord( 0, 0 )
@@ -100,24 +106,24 @@ Func UpdateCountdown()
 
 	$number = 0
 
-	GUISetState( @SW_SHOW )
-	WinMove( $title, "", $pos[0], $pos[1], $pos[2], $pos[3] )
-	if $maximized = 1 then GUISetState( @SW_MAXIMIZE );WinSetState( $title, "", @SW_MAXIMIZE )
-	$wh = WinGetClientSize( $title )
-	ConsoleWrite( "ww: " & $wh[0] & ", wh: " & $wh[1] & @CRLF )
+;~ 	GUISetState( @SW_SHOW )
+;~ 	WinMove( $title, "", $pos[0], $pos[1], $pos[2], $pos[3] )
+;~ 	if $maximized = 1 then GUISetState( @SW_MAXIMIZE );WinSetState( $title, "", @SW_MAXIMIZE )
+;~ 	$wh = WinGetClientSize( $title )
+;~ 	ConsoleWrite( "ww: " & $wh[0] & ", wh: " & $wh[1] & @CRLF )
 
-
-	$cellHeight = $wh[1] * 0.3
+;~ 	$cellHeight = $wh[1] * 0.3
+	$cellHeight = $_SS_WinHeight * 0.3
 	$cellLeft = 0
-	$cellWidth = $wh[0]/$columns
-	$cellTop = $wh[1]-$cellHeight
+	$cellWidth = $_SS_WinWidth/$columns
+	$cellTop = $_SS_WinHeight-$cellHeight
 	$row1 = $cellHeight / 2
 	$row2 = ($cellHeight - $row1) / 2
 	$row3 = $cellHeight - ($row1 + $row2)
-	ConsoleWrite( "H: " & $cellHeight & ", 1: " & $row1 & ", 2: " & $row2 & ", 3: " & $row3 & @CRLF )
+	ConsoleWrite( "cellTop: " & $cellTop & ", H: " & $cellHeight & ", 1: " & $row1 & ", 2: " & $row2 & ", 3: " & $row3 & @CRLF )
 
-	$cdImage = GUICtrlCreatePic( "", 0, 0, $wh[0], $cellTop )
-	$k = GUICtrlCreateLabel( "Countdown to the Gold Coast 2018 Commonwealth Games", $cellLeft, $cellTop+($row1+$row2), $wh[0], $row3, $SS_CENTER )
+	$cdImage = GUICtrlCreatePic( "", 0, 0, $_SS_WinWidth, $cellTop )
+	$k = GUICtrlCreateLabel( $title, $cellLeft, $cellTop+($row1+$row2), $_SS_WinWidth, $row3, $SS_CENTER )
 	GUICtrlSetBkColor( -1, $qrRed )
 	GUICtrlSetColor( -1, 0x00FFFFFF )
 ;~ 	$a	= GUICtrlCreateLabel( $Months, $cellLeft, $cellTop, $cellWidth, $row1, $SS_CENTER )
@@ -141,8 +147,9 @@ Func UpdateCountdown()
 	$j	= GUICtrlCreateLabel( "Seconds", $cellLeft, $cellTop+$row1, $cellWidth, $row2, $SS_CENTER )
 
 	EndIf
-	DisplayImage( $wh[0], $cellTop )
-
+	DisplayImage( $_SS_WinWidth, $cellTop )
+	_SS_SetMainLoop( "Main" )
+	_SS_Start()
 EndFunc
 
 Func DisplayImage( $maxWidth, $maxHeight )
@@ -229,16 +236,16 @@ Func DisplayNumber( $number, $position )
 		GUICtrlSetData( $i, $number )
 	EndSelect
 	If TimerDiff($lastImageupdate) > ($imageInterval * 1000) Then
-		$cellHeight = $wh[1] * 0.3
-		$cellTop = $wh[1]-$cellHeight
-		DisplayImage( $wh[0], $cellTop )
+		$cellHeight = $_SS_WinHeight * 0.3
+		$cellTop = $_SS_WinHeight-$cellHeight
+		DisplayImage( $_SS_WinWidth, $cellTop )
 		$lastImageupdate = TimerInit()
 	EndIf
-	If ($wh[0] <> $ws[0]) or ($wh[1] <> $ws[1]) or $updatenow Then
+	If ($_SS_WinHeight <> $ws[0]) or ($_SS_WinHeight <> $ws[1]) or $updatenow Then
 		$updatenow = 0
-		$cellHeight = $wh[1] * 0.3
-		$cellTop = $wh[1]-$cellHeight
-		DisplayImage( $wh[0], $cellTop )
+		$cellHeight = $_SS_WinHeight * 0.3
+		$cellTop = $_SS_WinHeight-$cellHeight
+		DisplayImage( $_SS_WinWidth, $cellTop )
 ;~ 		$fontmodifer = (($wh[1] + $wh[0])/2) * 0.09
 		$fontmodifer = $cellHeight * 0.4
 ;- Months
@@ -284,14 +291,16 @@ Func DisplayNumber( $number, $position )
 		EndIf
 ;~ Message
 		GUICtrlSetFont( $k, 	$fontmodifer / 3 )
-		$ws[0] = $wh[0]
-		$ws[1] = $wh[1]
+		$ws[0] = $_SS_WinHeight
+		$ws[1] = $_SS_WinHeight
 	EndIf
 EndFunc
 
 Func DisplayCountdown()
+;~ 	ConsoleWrite( "Entering DisplayCountdown()" & @CRLF )
 	HowLong()
-	If BitAND(WinGetState( $title ), 2 ) and $pillick = 0 Then
+;~ 	If BitAND(WinGetState( $title ), 2 ) and $pillick = 0 Then
+	If $pillick = 0 Then
 ;~ 		If $lm <> $Months Then
 ;~ 			DisplayNumber( $Months, "a" )
 ;~ 			$lm = $Months
@@ -408,47 +417,54 @@ EndIf
 ConsoleWrite( "1: " & $pos[1] & ", 2: " & $pos[2] & ", 3: " & $pos[3] & ", m: " & $maximized & @CRLF )
 UpdateCountdown()
 
-While 1
-	$msg = GUIGetMsg()
-	Select
-	Case $msg = $GUI_EVENT_CLOSE
-		MyExit()
-	Case $msg = $GUI_EVENT_MINIMIZE
-		TrayTip( $title, $Months & "m " & $Days & "d " & $Hours & ":" & $Minutes & ":" & $Seconds, 5 )
-	Case $msg = $GUI_EVENT_MAXIMIZE
-		$maximized = 1
-		RegWrite( "HKEY_CURRENT_USER\Software\Dennis Smith\Countdown Clock", "m", "REG_SZ", $maximized )
-	Case $msg = $GUI_EVENT_RESTORE
-		$maximized = 0
-		RegWrite( "HKEY_CURRENT_USER\Software\Dennis Smith\Countdown Clock", "m", "REG_SZ", $maximized )
-	Case $msg = $ontopitem
-		OnTop()
-	Case $msg = $changedate
-		ChangeDate()
-	Case Else
-		$dif = TimerDiff($begin)
-		if $dif > 500 Then
-			DisplayCountdown()
-		EndIf
-	EndSelect
-	for $menuitem = 1 to $maxdates
-		if $msg = $dateitem[$menuitem] Then
-			$getzerohour = RegRead( "HKEY_CURRENT_USER\Software\Dennis Smith\Countdown Clock", $menuitem )
-			if not @error Then
-				$pillick = 0
-				$zerohour = $getzerohour
-				GUIDelete( $cdWin )
-				$lm = -1
-				$ld = -1
-				$lh = -1
-				$ln = -1
-				$ls = -1
-				$updatenow = 1
-				UpdateCountdown()
+Func Main()
+;~ 	ConsoleWrite( "Entering Main()" & @CRLF )
+	Do
+		#cs - Disabled for Screen Saver mode
+		$msg = GUIGetMsg()
+		Select
+		Case $msg = $GUI_EVENT_CLOSE
+			MyExit()
+		Case $msg = $GUI_EVENT_MINIMIZE
+			TrayTip( $title, $Months & "m " & $Days & "d " & $Hours & ":" & $Minutes & ":" & $Seconds, 5 )
+		Case $msg = $GUI_EVENT_MAXIMIZE
+			$maximized = 1
+			RegWrite( "HKEY_CURRENT_USER\Software\Dennis Smith\Countdown Clock", "m", "REG_SZ", $maximized )
+		Case $msg = $GUI_EVENT_RESTORE
+			$maximized = 0
+			RegWrite( "HKEY_CURRENT_USER\Software\Dennis Smith\Countdown Clock", "m", "REG_SZ", $maximized )
+		Case $msg = $ontopitem
+			OnTop()
+		Case $msg = $changedate
+			ChangeDate()
+			Case Else
+		#ce
+			$dif = TimerDiff($begin)
+			if $dif > 500 Then
+				DisplayCountdown()
 			EndIf
-		EndIf
-	Next
-WEnd
+		#cs
+		EndSelect
+		for $menuitem = 1 to $maxdates
+			if $msg = $dateitem[$menuitem] Then
+				$getzerohour = RegRead( "HKEY_CURRENT_USER\Software\Dennis Smith\Countdown Clock", $menuitem )
+				if not @error Then
+					$pillick = 0
+					$zerohour = $getzerohour
+					GUIDelete( $cdWin )
+					$lm = -1
+					$ld = -1
+					$lh = -1
+					$ln = -1
+					$ls = -1
+					$updatenow = 1
+					UpdateCountdown()
+				EndIf
+			EndIf
+		Next
+		#ce
+	Until _SS_ShouldExit()
+EndFunc
 
 ; 1 MMm,
 ; 2 DDd,
