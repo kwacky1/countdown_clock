@@ -3,7 +3,7 @@
 #AutoIt3Wrapper_Outfile=bin\countdown.scr
 #AutoIt3Wrapper_Res_Comment=http://www.hiddensoft.com/autoit3/compiled.html
 #AutoIt3Wrapper_Res_Description=The Dennis Smith Memorial Countdown Clock
-#AutoIt3Wrapper_Res_Fileversion=4.2.0.1
+#AutoIt3Wrapper_Res_Fileversion=4.2.0.2
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=y
 #AutoIt3Wrapper_Res_LegalCopyright=SOE Integration Centre 2005-2018
 #AutoIt3Wrapper_Run_AU3Check=n
@@ -53,20 +53,46 @@ Func HowLong()
 			$pillick = 1
 		EndIf
 	Else
+		$skipWeekends = IniRead( $settings, "Options", "SkipWeekends", 0)
+		$skipHolidays = IniRead( $settings, "Options", "SkipHolidays", 0)
 ;~ 		$Months =  _DateDiff( 'M',_NowCalc(), $zerohour )
 ;~ 		$sNewDate = _DateAdd( 'm', $Months, _NowCalc())
 
 		$Days =    _DateDiff( 'D', _NowCalc(), $zerohour )
+		ConsoleWrite( "Days: " & $Days & @CRLF )
 		$sNewDate = _DateAdd( 'D', $Days, _NowCalc())
+		ConsoleWrite( "sNewDate: " & $sNewDate & @CRLF )
 
 		$Hours =   _DateDiff( 'h', $sNewDate, $zerohour )
 		$sNewDate = _DateAdd( 'h', $Hours, $sNewDate)
+		ConsoleWrite( "sNewDate: " & $sNewDate & @CRLF )
 
 		$Minutes = _DateDiff( 'n', $sNewDate, $zerohour )
 		$sNewDate = _DateAdd( 'n', $Minutes, $sNewDate)
+		ConsoleWrite( "sNewDate: " & $sNewDate & @CRLF )
 
 		$Seconds = _DateDiff( 's', $sNewDate, $zerohour )
 		$sNewDate = _DateAdd( 's', $Seconds, $sNewDate)
+		ConsoleWrite( "sNewDate: " & $sNewDate & @CRLF )
+
+		If $skipWeekends Then
+			$weeks = Int($days / 7)
+			ConsoleWrite( "Weeks: " & $weeks & @CRLF )
+			if ( 7 - (Mod($days,7)) = 1 ) Then $Days -= 1 ;Is today Sunday?
+			if ( 7 - (Mod($days,7)) = 7 ) Then $Days -= 1 ;Is today Saturday?
+			ConsoleWrite( "Days: " & $Days & @CRLF )
+			ConsoleWrite( "Weekends: " & $weeks * 2 & @CRLF )
+			$Days -= $weeks * 2
+		EndIf
+		If $skipHolidays Then
+			$holidays = IniReadSection( $settings, "Holidays" )
+			For $h = 1 To $holidays[0][0]
+				ConsoleWrite( "Holiday " & $holidays[$h][0] & " is on " & $holidays[$h][1] & @CRLF )
+				If _DateDiff( 'D', _NowCalc(), $holidays[$h][1]) > 0 Then $Days -= 1
+			Next
+		EndIf
+		$sNewDate = _DateAdd( 'D', $Days, _NowCalc())
+		ConsoleWrite( "sNewDate: " & $sNewDate & @CRLF )
 	EndIf
 EndFunc
 
@@ -354,6 +380,7 @@ Func ChangeDate()
 	$olddate = StringLeft( $zerohour, 10 )
 	$oldtime = StringRight( $zerohour, 8 )
 	$newdate = GuiCtrlCreateDate($olddate, 5, 5, 100, 20, $DTS_SHORTDATEFORMAT)
+	If StringLeft($newdate) = 9 Then $newdate = "0" & $newdate
 	$newtime = GUICtrlCreateDate ( $oldtime, 10, -1, 100, 20, $DTS_TIMEFORMAT)
 	$btn = GUICtrlCreateButton ("Ok", -1,  0, 60, 20)
 	GUISetState ()
